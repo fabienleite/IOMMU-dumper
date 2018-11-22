@@ -111,6 +111,13 @@ class Parser:
     A log parser for journalctl & IOMMU logs
     """
 
+    REGEX_LST = [
+        r"",
+        r"\iommu\: map\: iova.*pa.*size.*",
+        r"\iommu\: unmapped\: iova.*size.*",
+        r"",
+    ]
+
     def __init__(self, regex_lst):
         """
         The Parser object constructor
