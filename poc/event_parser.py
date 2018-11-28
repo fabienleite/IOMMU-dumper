@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import re
+import os
 
 
 def parse_line(line):
@@ -11,9 +12,9 @@ def parse_line(line):
 
     Output:
         - A dictionary. Dictionary can have 3 formats :
-            MAP EVENT           {event_type, bdf, iova, phys_addr, size}
+            MAP EVENT           {event_type, iova, phys_addr, size}
             UNMAP EVENT         {event_type, iova, size, unmapped_size}
-            ATTACH/DETACH EVENT {event_type, bdf}
+            ATTACH/DETACH EVENT {event_type, device_bdf}
 
     """
     # Regex to verify if it's a known event
@@ -21,17 +22,19 @@ def parse_line(line):
     r_events = re.compile(
         r".*\[[0-9]+\].* ((?:unmap|attach_device_to_domain|detach_device_from_domain|map)):(.*)"
     )
-    line = r_events.search(line)
-    if line == None:
-        raise Exception("Error : unknown event at the line\n%s" % line)
+    p_line = r_events.search(line)
+    if p_line == None:
+        return None
 
-    event, ev_args = line.groups()  # Get the event & the event arguments
+    event, ev_args = p_line.groups()  # Get the event & the event arguments
 
     if event == "attach_device_to_domain" or event == "detach_device_from_domain":
         r_args = re.compile(r".* device=(.*)$")
 
-        device_bdf = r_args.search(ev_args).group(1)
-        return {"event_type": event, "bdf": device_bdf}
+        device_bdf = ":".join(
+            r_args.search(ev_args).group(1).split(":")[1:]
+        )  # Remove PCI domain to BDF
+        return {"event_type": event, "device_bdf": device_bdf}
 
     elif event == "map":
         r_args = re.compile(r".* iova=(.*) paddr=(.*) size=(.*)$")
@@ -51,15 +54,20 @@ def parse_line(line):
 
 def parse_tracefile(filename="/sys/kernel/debug/tracing/trace"):
     """
-    Parses a trace file to get IOMMU events and their arguments
+    Parses a trace file to get IOMMU events and their arguments.
+    Add device_bdf & device_name to MAP EVENT
+    Add device_name to ATTACH/DETACH EVENT
 
     Attributes:
         - A file name as String. 
             By default, the /sys/kernel/debug/tracing/trace file
 
     Output:
-        - A list of Dictionary. See parse_line() function for further information about formats.
-        
+        - A list of Dictionary. Dictionary can have 3 formats :
+            MAP EVENT           {event_type, device_bdf, device_name, iova, phys_addr, size}
+            UNMAP EVENT         {event_type, iova, size, unmapped_size}
+            ATTACH/DETACH EVENT {event_type, device_bdf, device_name}
+
     """
     try:
         f = open(filename)
@@ -75,23 +83,44 @@ def parse_tracefile(filename="/sys/kernel/debug/tracing/trace"):
     for line in f_content:
         if line[0] != "#":
             parsed_line = parse_line(line)
+            if parsed_line == None:
+                continue
+
             if parsed_line["event_type"] == "attach_device_to_domain":
-                last_attach = parsed_line["bdf"]
+                lspci_output = os.popen(
+                    "lspci -s %s" % parsed_line["device_bdf"]
+                ).read()
+                device_name = lspci_output[
+                    len(parsed_line["device_bdf"]) : -1
+                ]  # Remove BDF & newline char
+                parsed_line["device_name"] = device_name
+
+                last_attach = (parsed_line["device_bdf"], device_name)
             elif parsed_line["event_type"] == "map":
                 try:
                     assert last_attach != None
-                    parsed_line["bdf"] = last_attach
+                    parsed_line["device_bdf"] = last_attach[0]
+                    parsed_line["device_name"] = last_attach[1]
                 except AssertionError:
                     raise Exception(
                         'Error : "map" event can\'t appear before "attach_device_to_domain" event'
                     )
 
+            elif parsed_line["event_type"] == "detach_device_from_domain":
+                lspci_output = os.popen(
+                    "lspci -s %s" % parsed_line["device_bdf"]
+                ).read()
+                device_name = lspci_output[
+                    len(parsed_line["device_bdf"]) : -1
+                ]  # Remove BDF & newline char
+                parsed_line["device_name"] = device_name
+
             parsed_traces.append(parsed_line)
 
-        return parsed_traces
+    return parsed_traces
 
 
-if __main__ == "__name__":
+if __name__ == "__main__":
     # Depends on the Linux Architecture
     parsing = parse_tracefile()
     print(parsing)
