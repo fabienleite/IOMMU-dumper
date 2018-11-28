@@ -17,7 +17,7 @@ def create_session():
     return DBSession()
 
 
-def adding_in_mapping_list(device, iova, phys_addr):
+def adding_in_mapping_list(device, iova, phys_addr, name):
     """ Add an entry to the mapping list mapping_addresses.
     Param :
         - device : the bdf of the device
@@ -30,6 +30,7 @@ def adding_in_mapping_list(device, iova, phys_addr):
     device_mapping["iova"] = [iova]
     device_mapping["physical_address"] = [phys_addr]
     device_mapping["bdf"] = device
+    device_mapping["name"] = name
 
     # Adding mapping to the list
     mapping_addresses.append(device_mapping)
@@ -80,30 +81,28 @@ def main():
     for mapping in session.query(Mapping).all():
 
         data = mapping.__dict__
-        try:
-            # Retrieves the device corresponding to the device id in the mapping
-            device = session.query(Device).filter_by(id = int(data["devices_id"])).one()
-            device_name = str(device.name)
-        except Exception as e:
-            raise
-        else:
 
-            iova = str(data["iova"])
-            phys_addr = str(data["phys_addr"])
+        device = mapping.device
+        device_bdf = str(device.bdf)
 
-            # Before adding the mapping, check if device isn't already in the list
-            # If it's in the list, update mapping list
-            if device_name in devices:
 
-                indice_in_dict = devices[device_name]
-                updating_mapping_list(indice_in_dict, iova, phys_addr)
+        iova = str(data["iova"])
+        phys_addr = str(data["phys_addr"])
+        name = device.name
 
-            # If it's not in the list, add a new entry in mapping_addresses
-            else :
+        # Before adding the mapping, check if device isn't already in the list
+        # If it's in the list, update mapping list
+        if device_bdf in devices:
 
-                adding_in_mapping_list(device_name, iova, phys_addr)
-                devices[device_name] = dict_indice
-                dict_indice += 1
+            indice_in_dict = devices[device_bdf]
+            updating_mapping_list(indice_in_dict, iova, phys_addr)
+
+        # If it's not in the list, add a new entry in mapping_addresses
+        else :
+
+            adding_in_mapping_list(device_bdf, iova, phys_addr, name)
+            devices[device_bdf] = dict_indice
+            dict_indice += 1
 
 
 if __name__ == '__main__':

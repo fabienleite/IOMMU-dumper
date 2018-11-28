@@ -16,6 +16,8 @@ cnt = 0
 
 for addr in addresses:
     cnt += 1
+    if addr["name"] is not None:
+        print(addr["name"])
     biggest_len = (
         len(addr["iova"])
         if len(addr["iova"]) > len(addr["physical_address"])
