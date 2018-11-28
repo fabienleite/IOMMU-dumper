@@ -1,8 +1,12 @@
 from retrieve_data import main, mapping_addresses
 
+# Calling main() from retrieve_data.py to get data
 main()
+# In retrieve_data.py, mapping list is in mapping_addresses
 addresses = mapping_addresses
 
+
+# Defining header and separators
 beginning_and_end = "-" * 54
 first_line = " Device | BDF       | VA         | PA"
 

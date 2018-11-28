@@ -4,25 +4,12 @@ from db_schema import Device, Mapping, Base
 
 
 # List containing devices mappings (global variable to be accessible from outside)
-# Format of mapping_addresses is :
-# mapping_addresses = [
-#     {
-#         "bdf": "0001:00.0",
-#         "iova": ["0x40000000"],
-#         "physical_address": ["0x00000003d4c00000", "0x00000003d4800000"],
-#     },
-#     ...
-#     {
-#         "bdf": "0000:14.0",
-#         "iova": ["0x40800000"],
-#         "physical_address": ["0x00000003d4400000"],
-#     }
-# ]
 mapping_addresses = []
 
 
 def create_session():
-    ''' Creates a session for data retrieving '''
+    """ Creates a session to retrieved data from iommu.db.
+    Returns the database session object. """
 
     engine = create_engine('sqlite:///iommu.db')
     Base.metadata.bind = engine
@@ -31,7 +18,7 @@ def create_session():
 
 
 def main():
-    ''' Retrieve data from iommu.db and format them into a list of dictionnaries
+    """ Retrieve data from iommu.db and format them into a list of dictionnaries
     named mapping_addresses.
     The format of the list is like the following:
     mapping_addresses = [
@@ -46,8 +33,7 @@ def main():
             "iova": ["0x40000000", "0x40000008"],
             "physical_address": ["0x00000003d4c00000", "0x00000003d4800000"],
         }
-    ]
-     '''
+    ] """
 
     session = create_session()
 
@@ -65,6 +51,7 @@ def main():
         device_mapping = {}
 
         try:
+            # Retrieves the device corresponding to the device id in the mapping
             device = session.query(Device).filter_by(id = int(data["devices_id"])).one()
             device_name = str(device.name)
         except Exception as e:
@@ -94,6 +81,7 @@ def main():
                 device_mapping["physical_address"] = [phys_addr]
                 device_mapping["bdf"] = device_name
 
+                # Adding mapping to the list
                 mapping_addresses.append(device_mapping)
                 devices[device_name] = dict_indice
                 dict_indice += 1
