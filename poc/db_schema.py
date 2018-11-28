@@ -12,12 +12,13 @@ Base = declarative_base()
 class Domain(Base):
     __tablename__ = 'domain'
     id = Column(Integer, primary_key=True)
-    name = Column(String(255))
+    name = Column(String(255), unique=True)
 
 class Device(Base):
     __tablename__ = 'device'
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
+    bdf = Column(String(255), unique=True)
     domain_id = Column(Integer, ForeignKey('domain.id'))
     domain = relationship('Domain', backref='device')
 
@@ -26,7 +27,7 @@ class Mapping(Base):
     id = Column(Integer, primary_key=True)
     devices_id = Column(Integer, ForeignKey('device.id'))
     iova = Column(String(255))
-    phys_addr = Column(String(255))
+    phys_addr = Column(String(255), unique=True)
     size = Column(Integer)
     device = relationship('Device', backref='mapping')
 
