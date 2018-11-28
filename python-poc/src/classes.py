@@ -112,10 +112,8 @@ class Parser:
     """
 
     REGEX_LST = [
-        r"",
         r"\iommu\: map\: iova.*pa.*size.*",
         r"\iommu\: unmapped\: iova.*size.*",
-        r"",
     ]
 
     def __init__(self, regex_lst):
