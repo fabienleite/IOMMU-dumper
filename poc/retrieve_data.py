@@ -8,8 +8,8 @@ mapping_addresses = []
 
 
 def create_session():
-    """ Creates a session to retrieved data from iommu.db.
-    Returns the database session object. """
+    """ Create a session to retrieved data from iommu.db.
+    Return the database session object. """
 
     engine = create_engine('sqlite:///iommu.db')
     Base.metadata.bind = engine
