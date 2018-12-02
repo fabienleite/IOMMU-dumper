@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from db_schema import Device, Domain, Mapping, Base
 
+from copy import deepcopy # for mel
 import json # for pretty printing dicts
 import logging
 logging.basicConfig(filename='db.log', level=logging.DEBUG)
@@ -58,12 +59,14 @@ def e_attach(session, _name, _bdf):
         If device already exist, do nothing
         In all cases, return orm object for the actual device
     """
+    session.query(Device).update({Device.last_attached : False})
     # bdf is unique
     existing = session.query(Device).filter_by(bdf=_bdf).one_or_none()
     if not existing:
         new_device = Device(
                 name = _name,
                 bdf  = _bdf,
+                last_attached = True,
                 domain = session.query(Domain).filter_by(name='host').one()
                 )
         session.add(new_device)
@@ -71,6 +74,7 @@ def e_attach(session, _name, _bdf):
         logging.info('Device {} added'.format(new_device.bdf))
         return new_device
     else:
+        existing.last_attached = True
         logging.info('Device {} already exists, not adding'.format(existing.bdf))
         return existing
 
@@ -79,10 +83,16 @@ def e_map(session, _device, _iova, _phys_addr, _size):
         Adds mapping entry and return orm object
     # iova is unique for each device
     # phys_addr is unique
+    # a device must have been attached
         if already mapped (highly improbable), raise an ugly Exception()
     """
     existing_p = session.query(Mapping).filter_by(phys_addr=_phys_addr).one_or_none()
     existing_v = session.query(Mapping).filter_by(iova=_iova, device=_device).one_or_none()
+
+    if not _device:
+        raise MapException('Mapping v:{} -> p:{} requested but no device'
+                .format(_iova, _phys_addr)
+        )
 
     if not existing_v and not existing_p:
         new_mapping = Mapping(
@@ -116,12 +126,6 @@ def e_map(session, _device, _iova, _phys_addr, _size):
                     ))
 
 def handle_event(session, event):
-    last_attached = session.query(Device).order_by(Device.id.desc()).first()
-
-    # TODO il faut trouver un moyen de récupérer la dernier device attached
-    #if last_attached:
-    #    logging.debug('Last attached device is {}'.format(last_attached.bdf))
-
     if event['event_type'] == 'attach':
         attached = e_attach(
                 session,
@@ -129,6 +133,7 @@ def handle_event(session, event):
                 event['dev_bdf']
         )
     elif event['event_type'] == 'map':
+        last_attached = session.query(Device).filter_by(last_attached=True).one_or_none()
         mapped = e_map(
                 session,
                 last_attached,
@@ -160,8 +165,26 @@ def main():
         logging.debug('{} v:{} -> p:{} ({})'
                 .format(m.device.bdf, m.iova, m.phys_addr, m.size))
 
+def _display():
+    mel = []
+    t_dict = {}
+    for d in session.query(Device).all():
+        t_dict['bdf'] = d.bdf
+        t_dict['iova'] = [m.iova for m in session.query(Mapping).filter_by(device=d).all()]
+        t_dict['physical_address'] = [m.phys_addr for m in session.query(Mapping).filter_by(device=d).all()]
+        mel.append(deepcopy(t_dict))
+    print json.dumps(mel, indent=2, sort_keys=True)
+
+
 def _retrieve_events():
     return [
+            { 
+                '_debug': 'A map without a device attached before, should fail',
+                'event_type': 'map',
+                'iova': '0x000600',
+                'size': 2048,
+                'phys_addr': '0xaa000fa'
+            },
             {
                 'dev_bdf': '1111:2b.01',
                 'dev_name': 'USB controller',
@@ -173,6 +196,13 @@ def _retrieve_events():
                 'iova': '0x000400',
                 'size': 2048,
                 'phys_addr': '0xff000fa'
+            },
+            { 
+                '_debug': 'a working map',
+                'event_type': 'map',
+                'iova': '0x000408',
+                'size': 2048,
+                'phys_addr': '0xff000ff'
             },
             { 
                 '_debug': 'same iova and device than the working map, should fail',
@@ -194,7 +224,7 @@ def _retrieve_events():
                 'phys_addr': '0xff000fc'
             },
             { 
-                '_debug': 'same phys_addr than working map, shoud fail',
+                '_debug': 'same phys_addr than working map, should fail',
                 'event_type': 'map',
                 'iova': '0x000404',
                 'size': 2048,
