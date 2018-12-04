@@ -1,0 +1,69 @@
+html{
+    font-family: sans-serif;
+    color: #333333;
+}
+
+#frieze-wrapper{
+    margin-top: 3em;
+    display: block;
+    width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+    font-weight: bold;
+}
+
+#frieze{
+    display: block;
+    width: 0%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+td{
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+    padding: 3em;
+    text-align: center;
+}
+
+.hole{
+    background-color: black;
+    color: white;
+}
+
+.color1{
+    background-color: #800000;
+    border-color: #800000;
+    color: white;
+}
+
+.color2{
+    background-color: #aa8f00;
+    border-color: #aa8f00;
+    color: white;
+}
+
+.color3{
+    background-color: #0a3055;
+    border-color: #0a3055;
+    color: white;
+}
+
+#device-details{
+    padding: 1rem;
+    margin-top: 4em;
+    border-color: #666666;
+    border-width: 1px;
+    border-style: solid;
+    display: block;
+    width: 60%;
+    margin-right: auto;
+    margin-left: auto;
+    /*display: none;*/
+}
+
+.low-opacity{
+    opacity: 0.30;
+    transform: scale(0.9);
+}
