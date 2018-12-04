@@ -126,11 +126,11 @@ def e_map(session, _device, _iova, _phys_addr, _size):
                     ))
 
 def handle_event(session, event):
-    if event['event_type'] == 'attach':
+    if event['event_type'] == 'attach_device_to_domain':
         attached = e_attach(
                 session,
-                event['dev_name'],
-                event['dev_bdf']
+                event['device_name'],
+                event['device_bdf']
         )
     elif event['event_type'] == 'map':
         last_attached = session.query(Device).filter_by(last_attached=True).one_or_none()
@@ -142,11 +142,13 @@ def handle_event(session, event):
                 event['size']
         )
 
-def main():
+def create_db_from_parse():
     session = create_session()
     add_domain(session, 'host')
+    from event_parser import parse_tracefile
 
-    for e in _retrieve_events():
+    #for e in _retrieve_events():
+    for e in parse_tracefile("/home/maxime/iommu_trace_wifi.txt"):
         if '_debug' in e:
             logging.debug(e['_debug'])
         try:
@@ -165,15 +167,16 @@ def main():
         logging.debug('{} v:{} -> p:{} ({})'
                 .format(m.device.bdf, m.iova, m.phys_addr, m.size))
 
-def _display():
-    mel = []
-    t_dict = {}
-    for d in session.query(Device).all():
-        t_dict['bdf'] = d.bdf
-        t_dict['iova'] = [m.iova for m in session.query(Mapping).filter_by(device=d).all()]
-        t_dict['physical_address'] = [m.phys_addr for m in session.query(Mapping).filter_by(device=d).all()]
-        mel.append(deepcopy(t_dict))
-    print json.dumps(mel, indent=2, sort_keys=True)
+def main():
+    session = create_session()
+    for dev in session.query(Device):
+        first_v = session.query(Mapping).filter_by(device=dev).order_by(Mapping.iova).first().iova
+        last_v = session.query(Mapping).filter_by(device=dev).order_by(Mapping.iova.desc()).first().iova
+        total = int(last_v, 16)-int(first_v, 16)
+        total_mb = total/8/1024**2
+
+        print "[{}] iova {} -> {} = {} ({} MB)".format(dev.bdf, first_v, last_v, total, total_mb)
+
 
 
 def _retrieve_events():
@@ -186,9 +189,9 @@ def _retrieve_events():
                 'phys_addr': '0xaa000fa'
             },
             {
-                'dev_bdf': '1111:2b.01',
-                'dev_name': 'USB controller',
-                'event_type': 'attach'
+                'device_bdf': '1111:2b.01',
+                'device_name': 'USB controller',
+                'event_type': 'attach_device_to_domain'
             },
             { 
                 '_debug': 'a working map',
@@ -212,9 +215,9 @@ def _retrieve_events():
                 'phys_addr': '0xff000fb'
             },
             {
-                'dev_bdf': '2222:2b.01',
-                'dev_name': 'SATA controller',
-                'event_type': 'attach'
+                'device_bdf': '2222:2b.01',
+                'device_name': 'SATA controller',
+                'event_type': 'attach_device_to_domain'
             },
             { 
                 '_debug': 'same iova than working map but different device, should work',

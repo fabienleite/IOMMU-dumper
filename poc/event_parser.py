@@ -73,7 +73,7 @@ def parse_tracefile(filename="/sys/kernel/debug/tracing/trace"):
         f = open(filename)
         f_content = [l[:-1] for l in f.readlines()]
         f.close()
-    except (IOError, FileExistsError) as e:
+    except (IOError) as e:
         raise e
 
     last_attach = None
@@ -96,15 +96,6 @@ def parse_tracefile(filename="/sys/kernel/debug/tracing/trace"):
                 parsed_line["device_name"] = device_name
 
                 last_attach = (parsed_line["device_bdf"], device_name)
-            elif parsed_line["event_type"] == "map":
-                try:
-                    assert last_attach != None
-                    parsed_line["device_bdf"] = last_attach[0]
-                    parsed_line["device_name"] = last_attach[1]
-                except AssertionError:
-                    raise Exception(
-                        'Error : "map" event can\'t appear before "attach_device_to_domain" event'
-                    )
 
             elif parsed_line["event_type"] == "detach_device_from_domain":
                 lspci_output = os.popen(
