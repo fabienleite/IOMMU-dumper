@@ -14,7 +14,8 @@ def create_session():
 
 
 def main ():
-    """ Display mapping for each device """
+    """ Display mapping for each device on the terminal.
+    Display device name, device B:D.F, virtual and physical address(es)."""
 
     session = create_session()
 
