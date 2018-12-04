@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="normalize.css">
+  <link rel="stylesheet" href="style.css">
+  <title>IOMMU configuration display page</title>
+</head>
+
+<body>
+  <table id="frieze-wrapper">
+    <tr id="frieze">
+      <td class="memory-range color1" data-device-id="5" onmouseover="displayDeviceInformation(5, 'MDR', '1 -> 2', '3 -> 4')"
+        onmouseout="revertToNormalOpacityAndText()">
+        5
+      </td>
+      <td class="memory-range color2" data-device-id="3" onmouseover="displayDeviceInformation(3, 'LUL', '5 -> 6', '7 -> 8')"
+        onmouseout="revertToNormalOpacityAndText()">
+        3
+      </td>
+      <td class="memory-range color3" data-device-id="2" onmouseover="displayDeviceInformation(2, 'LOL', '9 -> 10', '11 -> 12')"
+        onmouseout="revertToNormalOpacityAndText()">
+        2
+      </td>
+      <td class="memory-range hole" data-device-id="4" onmouseover="displayDeviceInformation(4, 'XD', '', '', true)"
+        onmouseout="revertToNormalOpacityAndText()">
+        4
+      </td>
+      <td class="memory-range color2" data-device-id="3" onmouseover="displayDeviceInformation(3, 'PTDR', '17 -> 18', '19 -> 20')"
+        onmouseout="revertToNormalOpacityAndText()">
+        3
+      </td>
+    </tr>
+  </table>
+
+  <div id="device-details">
+    <div id="device-name">
+      <strong>Device: </strong>
+      <span></span>
+    </div>
+    <div id="device-segment-iova">
+      <strong>IOVA: </strong>
+      <span></span>
+    </div>
+    <div id="device-segment-phys-addr">
+      <strong>Physical address: </strong>
+      <span></span>
+    </div>
+  </div>
+
+  <script>
+
+    /**
+     * Display the information about a device, dimm opacity on other devices
+     * Made to work when triggered by an event
+     */
+    function displayDeviceInformation(device_id, device_name, iova, phys_addr, is_a_hole = false) {
+      const segments = document.querySelectorAll('.memory-range')
+      for (let i = 0; i < segments.length; i++) {
+        if (segments[i].attributes['data-device-id'].nodeValue != device_id) {
+          segments[i].classList.add('low-opacity');
+        }
+      }
+
+      if (!is_a_hole) {
+        const deviceName = document.querySelector('#device-details > #device-name > span');
+        deviceName.textContent = device_name;
+
+        const segIOVA = document.querySelector('#device-details > #device-segment-iova > span');
+        segIOVA.textContent = iova;
+
+        const segPA = document.querySelector('#device-details > #device-segment-phys-addr > span');
+        segPA.textContent = phys_addr;
+      } else {
+        const deviceName = document.querySelector('#device-details > #device-name > span');
+        deviceName.textContent = 'No device here.';
+      }
+    }
+
+    /**
+     * Revert opacity to normal for the whole frieze
+     * Also resets the device details
+     */
+    function revertToNormalOpacityAndText() {
+      const segments = document.querySelectorAll('.memory-range');
+      for (let i = 0; i < segments.length; i++) {
+        segments[i].classList.remove('low-opacity');
+      }
+
+      const deviceName = document.querySelector('#device-details > #device-name > span');
+      deviceName.textContent = '';
+
+      const segIOVA = document.querySelector('#device-details > #device-segment-iova > span');
+      segIOVA.textContent = '';
+
+      const segPA = document.querySelector('#device-details > #device-segment-phys-addr > span');
+      segPA.textContent = '';
+    }    
+  </script>
+</body>
+
+</html>
