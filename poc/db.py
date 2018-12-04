@@ -20,30 +20,6 @@ def create_session():
     DBSession = sessionmaker(bind=engine)
     return DBSession()
 
-"""
-{ 
-    bdf: '0001:2b.01',
-    event_type: 'map',
-    iova: '0x000400',
-    size: 2048
-    phys_addr: '0xff000fa'
-}
-{ 
-    event_type: 'unmap',
-    iova: '0x000400',
-    size: 2048
-}
-{ 
-    bdf: '0001:2b.01',
-    device_name: 'SATA controller: Intel Corporation Sunrise Point-LP SATA Controller [AHCI mode] (rev 21)'
-    event_type: 'attach'
-}
-"""
-# Cannot create a device with map() event !! only with attach
-# Cannot attach a device if it is already attached to domain
-
-
-
 def add_domain(session, domain_name):
     exists = session.query(Domain).filter_by(name=domain_name).one_or_none()
     if not exists:
