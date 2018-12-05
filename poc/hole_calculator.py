@@ -27,7 +27,7 @@ def calc_hole(first_map, second_map, min_size=419430400):
         2 integers :
             - physical_address
             - mapping_size
-        formated as following 
+        formated as following
         ( physical_address, mapping_size )
 
     Input :
@@ -35,7 +35,7 @@ def calc_hole(first_map, second_map, min_size=419430400):
         - second_map : a Mapping Tuple
         - min_size : an Integer representing the minimum wanted size. By default 50MB
 
-    Output : 
+    Output :
         - A Mapping Tuple or None (if there is no hole)
     """
     hole_start = int(first_map[0],16) + first_map[1] #The end of first mapping
@@ -48,7 +48,7 @@ def calc_hole(first_map, second_map, min_size=419430400):
         return None
 
 
-def calc_all_holes(session):
+def calc_all_holes(type, value):
     """
     Calcul all holes between mappings.
 
@@ -58,14 +58,19 @@ def calc_all_holes(session):
     Output :
         - A list of Mapping Tuple (See calc_hole description)
     """
-    mappings = list(get_all_mappings(session))
-    
+    #mappings = list(get_all_mappings(session))
+
+    if type == 'session':
+        mappings = list(get_all_mappings(session))
+    elif type == 'dataset':
+        mappings = value
+
     holes_list = []
 
     for i in range(1,len(mappings)):
         first_mapping = mappings[i-1]
         second_mapping = mappings[i]
-        
+
         first_tuple = (first_mapping.phys_addr, first_mapping.size)
         second_tuple = (second_mapping.phys_addr, second_mapping.size)
 
@@ -79,4 +84,8 @@ def calc_all_holes(session):
 if __name__=="__main__":
     session=create_session()
 
-    print(calc_all_holes(session))
+    print(calc_all_holes('session', session))
+
+
+    data = list(get_all_mappings(session))
+    print(calc_all_holes('dataset', data))
