@@ -32,6 +32,12 @@ td{
     color: white;
 }
 
+.domain-shared{
+    background-color: #8a2be2;
+    border-color: #8a2be2;
+    color: white;
+}
+
 .color1{
     background-color: #800000;
     border-color: #800000;
@@ -39,8 +45,8 @@ td{
 }
 
 .color2{
-    background-color: #aa8f00;
-    border-color: #aa8f00;
+    background-color: #123622;
+    border-color: #123622;
     color: white;
 }
 
