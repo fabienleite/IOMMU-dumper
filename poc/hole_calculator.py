@@ -53,16 +53,16 @@ def calc_all_holes(type, value):
     Calcul all holes between mappings.
 
     Input :
-        - A SQLAlchemy DB session
+        - Type (session or dataset) of the second input
+        - A SQLAlchemy DB session or a dataset (list of mappings)
 
     Output :
         - A list of Mapping Tuple (See calc_hole description)
     """
-    #mappings = list(get_all_mappings(session))
 
     if type == 'session':
         mappings = list(get_all_mappings(session))
-    elif type == 'dataset':
+    else:
         mappings = value
 
     holes_list = []
@@ -85,7 +85,6 @@ if __name__=="__main__":
     session=create_session()
 
     print(calc_all_holes('session', session))
-
 
     data = list(get_all_mappings(session))
     print(calc_all_holes('dataset', data))
