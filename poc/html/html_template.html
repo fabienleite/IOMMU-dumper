@@ -1,3 +1,4 @@
+<!-- THIS DOCUMENT IS JUST AN EXAMPLE OF WHAT A COMPLETE PAGE IS SUPPOSED TO LOOK LIKE -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,13 +22,13 @@
         onmouseout="revertToNormalOpacityAndText()">
         3
       </td>
-      <td class="memory-range color3" data-device-id="2" onmouseover="displayDeviceInformation(2, 'LOL', '9 -> 10', '11 -> 12')"
+      <td class="memory-range domain-shared" data-device-id="0" onmouseover="displayDeviceInformation(0, 'LOL', '', '0x12345678 -> 0x12445678')"
         onmouseout="revertToNormalOpacityAndText()">
-        2
+        0
       </td>
-      <td class="memory-range hole" data-device-id="4" onmouseover="displayDeviceInformation(4, 'XD', '', '', true)"
+      <td class="memory-range hole" data-device-id="-1" onmouseover="displayDeviceInformation(-1, 'XD', '', '', true)"
         onmouseout="revertToNormalOpacityAndText()">
-        4
+        -1
       </td>
       <td class="memory-range color2" data-device-id="3" onmouseover="displayDeviceInformation(3, 'PTDR', '17 -> 18', '19 -> 20')"
         onmouseout="revertToNormalOpacityAndText()">
@@ -60,12 +61,25 @@
     function displayDeviceInformation(device_id, device_name, iova, phys_addr, is_a_hole = false) {
       const segments = document.querySelectorAll('.memory-range')
       for (let i = 0; i < segments.length; i++) {
-        if (segments[i].attributes['data-device-id'].nodeValue != device_id) {
+        if (
+          segments[i].attributes['data-device-id'].nodeValue != device_id && 
+          segments[i].attributes['data-device-id'].nodeValue != 0 ||
+          (segments[i].attributes['data-device-id'].nodeValue == 0 && device_id == -1)
+        ) {
           segments[i].classList.add('low-opacity');
         }
       }
 
-      if (!is_a_hole) {
+      if (device_id === 0) {
+        const deviceName = document.querySelector('#device-details > #device-name > span');
+        deviceName.textContent = 'Shared memory space for various devices.';
+
+        const segPA = document.querySelector('#device-details > #device-segment-phys-addr > span');
+        segPA.textContent = phys_addr;
+      } else if(device_id === -1){
+        const deviceName = document.querySelector('#device-details > #device-name > span');
+        deviceName.textContent = 'No device here.';
+      } else {
         const deviceName = document.querySelector('#device-details > #device-name > span');
         deviceName.textContent = device_name;
 
@@ -74,9 +88,6 @@
 
         const segPA = document.querySelector('#device-details > #device-segment-phys-addr > span');
         segPA.textContent = phys_addr;
-      } else {
-        const deviceName = document.querySelector('#device-details > #device-name > span');
-        deviceName.textContent = 'No device here.';
       }
     }
 
