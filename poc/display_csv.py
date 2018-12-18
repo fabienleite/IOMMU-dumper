@@ -19,10 +19,28 @@ def main ():
 
     session = create_session()
 
-    with open('csv_output.csv', 'w') as output_csv:
-        output_writer = csv.writer(output_csv)
+    with open('out/iommu_output.csv', 'w') as output_csv:
+        output_writer = csv.writer(output_csv, delimiter=';')
 
-        for cnt, d in enumerate(session.query(Device).all(), 1):
-            name = d.name
-            iova = [m.iova for m in session.query(Mapping).filter_by(device=d).all()]
-            phys_addr = [m.phys_addr for m in session.query(Mapping).filter_by(device=d).all()]
+        # Header
+        # A adapter suivant la nouvelle bdd
+        output_writer.writerow(['IOVA','Physical adress'])
+
+        # for cnt, d in enumerate(session.query(Device).all(), 1):
+        #     name = d.name
+        #     bdf = d.bdf
+        #     iova = [m.iova for m in session.query(Mapping).all()]
+        #     phys_addr = [m.phys_addr for m in session.query(Mapping).all()]
+
+        # A adapter suivant la nouvelle bdd
+        for map in session.query(Mapping).all():
+
+            output_writer.writerow([map.iova, map.phys_addr])
+
+            # une ligne pour chaque mapping : iova, phys_addr
+
+            # output_csv.writerow(name, bdf, iova[i], phys_addr[i])
+
+
+if __name__ == '__main__':
+    main()
