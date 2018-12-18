@@ -1,5 +1,3 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
@@ -150,9 +148,6 @@ def main():
         last_v = session.query(Mapping).filter_by(device=dev).order_by(Mapping.iova.desc()).first().iova
         total = int(last_v, 16)-int(first_v, 16)
         total_mb = total/8/1024**2
-
-        print "[{}] iova {} -> {} = {} ({} MB)".format(dev.bdf, first_v, last_v, total, total_mb)
-
 
 
 def _retrieve_events():
