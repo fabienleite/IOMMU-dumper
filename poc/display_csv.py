@@ -13,33 +13,28 @@ def create_session():
     return DBSession()
 
 
-def main ():
-    """ Output mapping in a CSV file.
-    Format is : device_name, b.d:f, iova, physical_address """
+def main():
+    """ Output existing mappings in a CSV file named iommu_config_display.csv
+    and located in the out directory.
+    Format is : iova;physical_address;size;device_name (can be empty) """
 
     session = create_session()
 
-    with open('out/iommu_output.csv', 'w') as output_csv:
+    with open('out/iommu_config_display.csv', 'w') as output_csv:
         output_writer = csv.writer(output_csv, delimiter=';')
 
-        # Header
-        # A adapter suivant la nouvelle bdd
-        output_writer.writerow(['IOVA','Physical adress'])
+        # ---- Header
+        output_writer.writerow(['IOVA','Physical adress', 'Size','Device name'])
 
-        # for cnt, d in enumerate(session.query(Device).all(), 1):
-        #     name = d.name
-        #     bdf = d.bdf
-        #     iova = [m.iova for m in session.query(Mapping).all()]
-        #     phys_addr = [m.phys_addr for m in session.query(Mapping).all()]
-
-        # A adapter suivant la nouvelle bdd
         for map in session.query(Mapping).all():
+            device = session.query(Device).filter_by(memoryBaseAddress=map).one_or_none()
 
-            output_writer.writerow([map.iova, map.phys_addr])
+            if device is not None:
+                device_name = device.name
+            else:
+                device_name = ""
 
-            # une ligne pour chaque mapping : iova, phys_addr
-
-            # output_csv.writerow(name, bdf, iova[i], phys_addr[i])
+            output_writer.writerow([map.iova, map.phys_addr, map.size, device_name])
 
 
 if __name__ == '__main__':
