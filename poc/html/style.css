@@ -24,12 +24,21 @@ td{
     border-style: solid;
     border-color: black;
     padding: 3em;
+    padding-left: 1em;
+    padding-right: 1em;
     text-align: center;
 }
 
-.hole{
+td.hole{
     background-color: black;
     color: white;
+    padding-right: 4em;
+    padding-left: 4em
+}
+
+td.domain-shared{
+    padding-right: 8em;
+    padding-left: 8em;
 }
 
 .domain-shared{

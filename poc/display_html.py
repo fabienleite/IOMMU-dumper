@@ -6,19 +6,50 @@ import platform
 import subprocess
 import shutil
 
+from hole_calculator import calc_all_holes, get_all_mappings
+from db import create_session
 
-def generate_html_frieze():
+
+def generate_html_frieze(type, value):
+    """
+    Gets the data to be able to generate the frieze.
+    Calls the function to actually generate HTML.
+
+    Input :
+        - Type (session or dataset) of the second input
+        - A SQLAlchemy DB session or a dataset (list of mappings)
+    """
+    if type == "session":
+        session = value
+        mappings = get_all_mappings(session)
+    elif type == "dataset":
+        mappings = value
+
+    holes = calc_all_holes("dataset", mappings)
+    memory_state = sorted(mappings + holes, key=lambda mapping: mapping.phys_addr)
+    html_frieze = create_html_from_memory_state(memory_state)
+    return html_frieze
+
+
+def create_html_from_memory_state(memory_state):
     """
     Generates the "frieze" for the html output
     The frieze is an html table
+
+    Input:
+        - memory_state : the list of memory states : holes and device mappings
     """
-    return ""
+    return "<tr>mdr</tr>"
 
 
-def write_html_file():
+def write_html_file(type=None, value=None):
     """
     Creates a new html file with the content of the IOMMU mapping on a visual way.
     The output is located in ./out/
+
+    Input :
+        - Type (session or dataset) of the second input
+        - A SQLAlchemy DB session or a dataset (list of mappings)
     """
 
     filenames = ["./html/top_template.html", "./html/bottom_template.html"]
@@ -26,7 +57,14 @@ def write_html_file():
     with open(filenames[0], "r") as file:
         top_content = file.read()
 
-    core_content = generate_html_frieze()
+    if type == "session":
+        core_content = generate_html_frieze("session", value)
+    elif type == "dataset":
+        core_content = generate_html_frieze("dataset", value)
+    else:
+        session = create_session()
+        mappings = get_all_mappings(session)
+        core_content = generate_html_frieze("dataset", mappings)
 
     with open(filenames[1], "r") as file:
         bottom_content = file.read()
