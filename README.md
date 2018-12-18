@@ -20,20 +20,23 @@ What things you need to install the software and how to install them
 
 #### How to enable debug on IOMMU ?
 
-In your grub file (Usually /etc/default/grub), add _trace\_event=iommu_ to the GRUB_CMDLINE_LINUX_DEFAULT.
+In your grub file (Usually _/etc/default/grub_), add _trace\_event=iommu_ to the GRUB_CMDLINE_LINUX_DEFAULT.
 
-_**GRUB_CMDLINE_LINUX_DEFAULT=" ... trace_event=iommu**_
-
+```
+GRUB_CMDLINE_LINUX_DEFAULT=" ... trace_event=iommu
+```
 Then recreate your grub.cfg
 
-_**grub-mkconfig –output /path/to/grub.cfg**_
-
+```bash
+$ grub-mkconfig –output /path/to/grub.cfg
+```
 
 ### Installing
 
 You can download the IOMMU-Dumper project by cloning the Git repository :
-	git clone https://github.com/fabienleite/IOMMU-dumper
-
+```bash
+git clone https://github.com/fabienleite/IOMMU-dumper
+```
 
 ## Authors
 
