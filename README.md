@@ -5,7 +5,44 @@ A university project which object is to dump the mapping configuration of the [I
 The idea is to be able to know at any time which device is mapped to which part of the memory.
 
 
-## Licence
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+### Prerequisites
+
+What things you need to install the software and how to install them
+
+* python3
+* sqlalchemy
+* Enable debug on IOMMU (via traces)
+
+
+#### How to enable debug on IOMMU ?
+
+In your grub file (Usually /etc/default/grub), add _trace\_event=iommu_ to the GRUB_CMDLINE_LINUX_DEFAULT.
+
+_**GRUB_CMDLINE_LINUX_DEFAULT=" ... trace_event=iommu**_
+
+Then recreate your grub.cfg
+
+_**grub-mkconfig –output /path/to/grub.cfg**_
+
+
+### Installing
+
+You can download the IOMMU-Dumper project by cloning the Git repository :
+	git clone https://github.com/fabienleite/IOMMU-dumper
+
+
+## Authors
+
+* **Fabien Leite** - [fabienleite](https://github.com/fabienleite)
+* **Maxime Messin** - [orygin10](https://github.com/orygin10)
+* **Rémi Millerand** - [Driikolu](https://twitter.com/driikolu)
+* **Mélanie Romain** - [melrm](https://github.com/melrm)
+
+## License
 
 Copyright 2018 Fabien Leite, Maxime Messin, Rémi Millerand, Mélanie Romain
 
@@ -20,3 +57,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
