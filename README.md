@@ -15,15 +15,16 @@ What things you need to install the software and how to install them
 
 * python3
 * sqlalchemy
+* Enable IOMMU
 * Enable debug on IOMMU (via traces)
 
 
-#### How to enable debug on IOMMU ?
+#### How to enable IOMMU & debug on it ?
 
-In your grub file (Usually _/etc/default/grub_), add _trace\_event=iommu_ to the GRUB_CMDLINE_LINUX_DEFAULT.
+In your grub file (Usually _/etc/default/grub_), add _intel\_iommu=on_ and _trace\_event=iommu_ to the GRUB_CMDLINE_LINUX_DEFAULT.
 
 ```
-GRUB_CMDLINE_LINUX_DEFAULT=" ... trace_event=iommu
+GRUB_CMDLINE_LINUX_DEFAULT=" ... intel_iommu=on trace_event=iommu
 ```
 Then recreate your grub.cfg
 
