@@ -1,30 +1,12 @@
-"""
-En example of the display we expect to have. Devices are set staticaly with statical adresses, etc.
-"""
+from retrieve_data import main, mapping_addresses
 
-addresses = [
-    {
-        "bdf": "0001:00.0",
-        "iova": ["0x40000000"],
-        "physical_address": ["0x00000003d4c00000", "0x00000003d4800000"],
-    },
-    {
-        "bdf": "0000:14.0",
-        "iova": ["0x40800000"],
-        "physical_address": ["0x00000003d4400000"],
-    },
-    {
-        "bdf": "0000:15.1",
-        "iova": ["0x40c00000"],
-        "physical_address": ["0x00000003d4000000"],
-    },
-    {
-        "bdf": "0003:00.0",
-        "iova": ["0x44000000"],
-        "physical_address": ["0x00000003d0c00000", "0x00000003d0800000"],
-    },
-]
+# Calling main() from retrieve_data.py to get data
+main()
+# In retrieve_data.py, mapping list is in mapping_addresses
+addresses = mapping_addresses
 
+
+# Defining header and separators
 beginning_and_end = "-" * 54
 first_line = " Device | BDF       | VA         | PA"
 
@@ -34,6 +16,8 @@ cnt = 0
 
 for addr in addresses:
     cnt += 1
+    if addr["name"] is not None:
+        print(addr["name"])
     biggest_len = (
         len(addr["iova"])
         if len(addr["iova"]) > len(addr["physical_address"])

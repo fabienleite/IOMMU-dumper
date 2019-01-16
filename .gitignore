@@ -3,3 +3,6 @@
 **/env
 *.db
 .vscode/
+*.log
+*.swp
+*.html
