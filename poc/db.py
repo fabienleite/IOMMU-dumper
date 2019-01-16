@@ -40,7 +40,7 @@ def e_device(session, _name, _bdf, _lspci):
         session.commit()
         logging.info('Added device {} with base PA {}'
                 .format(
-                    new_device.bdf, 
+                    new_device.bdf,
                     new_device.mapping.phys_addr
                     ))
         return new_device
@@ -60,8 +60,8 @@ def e_map(session, _iova, _phys_addr, _size):
         session.commit()
         logging.info('Mapped v:{} p:{}'
                 .format(
-                    new_mapping.iova, 
-                    new_mapping.phys_addr 
+                    new_mapping.iova,
+                    new_mapping.phys_addr
                     ))
         return new_mapping
     elif existing_v and existing_v.phys_addr != new_mapping.phys_addr:
@@ -138,42 +138,42 @@ def _retrieve_events():
                 'bdf': '01:00.00',
                 'lspci': "Memory at 0xee000000 (32-bit, non-prefetchable) [size=16M]"
             },
-            { 
+            {
                 '_debug': 'The mapping corresponding to previous attached dev',
                 'type': 'map',
                 'iova': '0x000faf',
                 'size': 16384,
                 'phys_addr': '0xee000000'
             },
-            { 
+            {
                 '_debug': 'a working map',
                 'type': 'map',
                 'iova': '0x000400',
                 'size': 2048,
                 'phys_addr': '0xaa000fa'
             },
-            { 
+            {
                 '_debug': 'a working map',
                 'type': 'map',
                 'iova': '0x000600',
                 'size': 2048,
                 'phys_addr': '0xbb000fa'
             },
-            { 
+            {
                 '_debug': 'a working map',
                 'type': 'map',
                 'iova': '0x000800',
                 'size': 2048,
                 'phys_addr': '0xcc000fa'
             },
-            { 
+            {
                 '_debug': 'same iova than the working map, should update',
                 'type': 'map',
                 'iova': '0x000400',
                 'size': 2048,
                 'phys_addr': '0xaa000fb'
             },
-            { 
+            {
                 '_debug': 'same phys_addr than working map, should update',
                 'type': 'map',
                 'iova': '0x000a00',
