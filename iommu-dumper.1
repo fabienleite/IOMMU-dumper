@@ -1,0 +1,58 @@
+.\" Manpage for iommu-dumper
+.if \n[.g] .mso www.tmac
+.TH iommu-dumper 1 "05 December 2018" "v2.0" "iommu-dumper man page"
+.SH NAME
+iommu-dumper \- dump the IOMMU mapping
+.SH SYNOPSIS
+iommu-dumper
+\fB\-o\fR \fIOUTPUT\fR
+.SH DESCRIPTION
+iommu-dumper is a program for dumping the current IOMMU mapping configuration. The program can directly send the output in the terminal, or put it in HTML or CSV format.
+.PP
+Output information can differ depending on the output type.
+.SH OPTIONS
+.TP
+.BR \-o ", " \-\-output =\fIOUTPUT\fR
+Set the output type for the mapping. Values can be \fBcli\fR, \fBhtml\fR or \fBcsv\fR.
+
+\fBCLI\fR
+
+This output, sent in the current terminal, contains basic informations like device name, B:D.F and its mapping with IOVA and physical address(es).
+
+\fBHTML\fR
+
+This output offers a more graphical representation with memory allocation size for devices.
+
+The HTML page, named \fBiommu_config_display.html\fR, is generated in the \fBout\fR directory and is automatically opened with the usual HTML opener.
+
+\fBCSV\fR
+
+This output contains all the raw data and is generated in the \fBout\fR directory. The file is named \fBiommu_config_display.csv\fR.
+
+.SH EXAMPLES
+To output the mapping in the terminal :
+.PP
+.nf
+.RS
+iommu-dumper \-o cli
+.RE
+.fi
+
+To output a csv :
+.PP
+.nf
+.RS
+iommu-dumper \-\-output=csv
+.RE
+.fi
+.SH SEE ALSO
+\fBlspci\fR(8)
+.SH BUGS
+No known bugs.
+.SH AUTHORS
+Fabien Leite, Maxime Messin, Rémi Millerand, Mélanie Romain
+.PP
+See
+.URL "https://github.com/fabienleite/IOMMU-dumper"
+.SH COPYRIGHT
+Copyright 2018 Fabien Leite, Maxime Messin, Rémi Millerand, Mélanie Romain
