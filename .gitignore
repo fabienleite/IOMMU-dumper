@@ -7,3 +7,6 @@
 *.html
 **/out/
 .vscode/
+*.log
+*.swp
+*.html
