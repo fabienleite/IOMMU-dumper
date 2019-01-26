@@ -14,8 +14,15 @@ class Device(Base):
     id            = Column(Integer, primary_key=True)
     name          = Column(String(255), unique=True)
     bdf           = Column(String(255), unique=True)
+
+class DevMem(Base):
+    __tablename__ = 'devmem'
+    id            = Column(Integer, primary_key=True)
+    device_id     = Column(Integer, ForeignKey('device.id'))
+    device        = relationship('Device', backref='devmem')
     mapping_id    = Column(Integer, ForeignKey('mapping.id'))
-    mapping       = relationship('Mapping', backref='device')
+    mapping       = relationship('Mapping', backref='devmem')
+
 
 class Mapping(Base):
     __tablename__ = 'mapping'

@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from db_schema import Device, Mapping, Base
+from db_schema import Device, Mapping, DevMem, Base
 
 import logging
 logging.basicConfig(filename='db.log', level=logging.DEBUG)
@@ -17,6 +17,9 @@ def create_session():
     Base.metadata.bind = engine
     DBSession = sessionmaker(bind=engine)
     return DBSession()
+
+def e_device(session, _name, _bdf):
+    pass
 
 def e_map(session, _iova, _phys_addr, _size):
     existing_p = session.query(Mapping).filter_by(phys_addr=_phys_addr).one_or_none()
