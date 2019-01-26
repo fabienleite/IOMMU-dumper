@@ -6,6 +6,7 @@ import platform
 import subprocess
 import shutil
 
+from db import Device
 from hole_calculator import calc_all_holes, get_all_mappings
 from db import create_session
 
@@ -15,20 +16,91 @@ def generate_html_frieze(type, value):
     Gets the data to be able to generate the frieze.
     Calls the function to actually generate HTML.
 
-    Input :
+    Input:
         - Type (session or dataset) of the second input
         - A SQLAlchemy DB session or a dataset (list of mappings)
+    Output:
+        - The HTML to be displayed
     """
     if type == "session":
         session = value
-        mappings = get_all_mappings(session)
+        mappings = list(get_all_mappings(session))
     elif type == "dataset":
         mappings = value
 
-    holes = calc_all_holes("dataset", mappings)
+    holes_raw = calc_all_holes("dataset", mappings)
+    holes = []
+    for hole in holes_raw:
+        holes.append(
+            {
+                'devices_id': -1000,
+                'id': -1000,
+                'iova': None,
+                'phys_addr': hole[0],
+                'size': hole[1]
+            }
+        )
+
+    for hole in holes:
+        hole['devices_id'] = -1
+
+    
+    try:
+        mappings = add_device_info(mappings, session)
+    except:
+        session = create_session()
+        mappings = add_device_info(mappings, session)
+
     memory_state = sorted(mappings + holes, key=lambda mapping: mapping.phys_addr)
+    memory_state = unify_common_space(memory_state)
     html_frieze = create_html_from_memory_state(memory_state)
     return html_frieze
+
+
+def unify_common_space(memory_state):
+    """
+    Merges the common space for various devices.
+    Each one may not have the same size in the shared space whereas they seem to all have access to the whole space.
+    Input:
+        - memory_state : the state in which the memory is with all its fragments.
+    Output:
+        The memory with common space merged.
+    """
+    new_memory_state = [memory_state[0]]
+    for i in range(1, len(memory_state)):
+        if memory_state[i].devices_id == 0 and new_memory_state[-1] == 0:
+            new_memory_state[-1].size += memory_state[i].size
+        else:
+            new_memory_state.append(memory_state[i])
+    return new_memory_state
+
+
+def add_device_info(mappings, session):
+    """
+    Adds the informations about the device for each mapping.
+        - If the mapping is related to a device, gives the device id.
+        - If it is common space, takes the id 0
+        - ! Not used here ! If it is part of a "memory hole", id is -1
+    
+    Input :
+        - mappings : the list of mappings you want to sort
+        - session : the database session
+    """
+    for mapping in mappings:
+        mapping_device = (
+            session.query(Device)
+            .filter(Device.memory_base_address == mapping.phys_addr)
+            .one()
+            or None
+        )
+        if mapping_device != None:
+            # Devices map exactly one segment for them specifically
+            mapping.devices_id = Device.id
+        else:
+            # If the mapping is in the mapping table and not related to a Device,
+            # it's part of the common space to be used
+            mapping.devices_id = 0
+    return mappings
 
 
 def create_html_from_memory_state(memory_state):
@@ -39,7 +111,28 @@ def create_html_from_memory_state(memory_state):
     Input:
         - memory_state : the list of memory states : holes and device mappings
     """
-    return "<tr>mdr</tr>"
+    i = 0
+    for memory_part in memory_state:
+        color_id = (i % 3) + 1
+        return (
+            "<tr"
+            + 'class="memory-range color'
+            + str(color_id)
+            + '"'
+            + 'data-device-id="'
+            + memory_part.devices_id
+            + '"'
+            + "onmouseover=\"displayDeviceInformation('"
+            + str(memory_part.devices_id)
+            + "', 'Temporary name', '"
+            + str(memory_part.iova)
+            + "','"
+            + str(memory_part.phys_addr)
+            + "->"
+            + str(memory_part.phys_addr + memory_part.size)
+            + "', onmouseout=revertToNormalOpacityAndText();\""
+            ">" + "</tr>"
+        )
 
 
 def write_html_file(type=None, value=None):
@@ -63,7 +156,7 @@ def write_html_file(type=None, value=None):
         core_content = generate_html_frieze("dataset", value)
     else:
         session = create_session()
-        mappings = get_all_mappings(session)
+        mappings = list(get_all_mappings(session))
         core_content = generate_html_frieze("dataset", mappings)
 
     with open(filenames[1], "r") as file:
