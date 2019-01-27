@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-=======
->>>>>>> HTML display retreiving data
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
@@ -130,16 +127,7 @@ def create_db_from_parse():
 
 def main():
     session = create_session()
-<<<<<<< HEAD
     create_db_from_parse()
-=======
-    for dev in session.query(Device):
-        first_v = session.query(Mapping).filter_by(device=dev).order_by(Mapping.iova).first().iova
-        last_v = session.query(Mapping).filter_by(device=dev).order_by(Mapping.iova.desc()).first().iova
-        total = int(last_v, 16)-int(first_v, 16)
-        total_mb = total/8/1024**2
-
->>>>>>> HTML display retreiving data
 
 def _retrieve_events():
     return [

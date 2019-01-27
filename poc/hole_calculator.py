@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from db_schema import Device, Domain, Mapping, Base
+from db_schema import Device, Mapping, Base
 from db import create_session
 
 def get_all_mappings(session):

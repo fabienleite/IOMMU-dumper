@@ -6,7 +6,7 @@ import platform
 import subprocess
 import shutil
 
-from db import Device
+from db_schema import Device
 from hole_calculator import calc_all_holes, get_all_mappings
 from db import create_session
 
@@ -43,7 +43,6 @@ def generate_html_frieze(type, value):
 
     for hole in holes:
         hole['devices_id'] = -1
-
     
     try:
         mappings = add_device_info(mappings, session)
@@ -51,7 +50,10 @@ def generate_html_frieze(type, value):
         session = create_session()
         mappings = add_device_info(mappings, session)
 
-    memory_state = sorted(mappings + holes, key=lambda mapping: mapping.phys_addr)
+    mappings_as_dict = []
+    for m in mappings:
+        mappings_as_dict.append(m.__dict__)
+    memory_state = sorted(mappings_as_dict + holes, key=lambda mapping: mapping['phys_addr'])
     memory_state = unify_common_space(memory_state)
     html_frieze = create_html_from_memory_state(memory_state)
     return html_frieze
@@ -68,8 +70,8 @@ def unify_common_space(memory_state):
     """
     new_memory_state = [memory_state[0]]
     for i in range(1, len(memory_state)):
-        if memory_state[i].devices_id == 0 and new_memory_state[-1] == 0:
-            new_memory_state[-1].size += memory_state[i].size
+        if memory_state[i]['devices_id'] == 0 and new_memory_state[-1]['devices_id'] == 0:
+            new_memory_state[-1]['size'] += memory_state[i]['size']
         else:
             new_memory_state.append(memory_state[i])
     return new_memory_state
@@ -89,9 +91,8 @@ def add_device_info(mappings, session):
     for mapping in mappings:
         mapping_device = (
             session.query(Device)
-            .filter(Device.memory_base_address == mapping.phys_addr)
-            .one()
-            or None
+            .filter(Device.mapping == mapping)
+            .one_or_none()
         )
         if mapping_device != None:
             # Devices map exactly one segment for them specifically
@@ -112,27 +113,42 @@ def create_html_from_memory_state(memory_state):
         - memory_state : the list of memory states : holes and device mappings
     """
     i = 0
+    frieze_text = ""
     for memory_part in memory_state:
-        color_id = (i % 3) + 1
-        return (
-            "<tr"
+        hole = ' hole' if memory_part['devices_id'] == -1 else ''
+        domain_shared = ' domain-shared' if memory_part['devices_id'] == 0 else ''
+        if hole != ' hole' and domain_shared != ' domain-shared' :
+            color_id = (i % 3) + 1
+            dev_name = 'Temporary Name'
+        elif hole != ' hole':
+            dev_name = 'Domain shared space'
+            color_id = ''
+        elif domain_shared != ' domain-shared':
+            dev_name = 'Hole'
+            color_id = ''
+
+        frieze_text += (
+            "<td "
             + 'class="memory-range color'
             + str(color_id)
-            + '"'
+            + hole + domain_shared + '"'
             + 'data-device-id="'
-            + memory_part.devices_id
+            + str(memory_part['devices_id'])
             + '"'
             + "onmouseover=\"displayDeviceInformation('"
-            + str(memory_part.devices_id)
-            + "', 'Temporary name', '"
-            + str(memory_part.iova)
+            + str(memory_part['devices_id'])
+            + "', '" + dev_name + "', '"
+            + str(memory_part['iova'])
             + "','"
-            + str(memory_part.phys_addr)
+            + str(memory_part['phys_addr'])
             + "->"
-            + str(memory_part.phys_addr + memory_part.size)
-            + "', onmouseout=revertToNormalOpacityAndText();\""
-            ">" + "</tr>"
+            #+ str(hex(int(memory_part['phys_addr'], 16) + memory_part['size']))
+            + "')\", onmouseout=\"revertToNormalOpacityAndText();\""
+            +  ">" + "</td>"
         )
+        i += 1
+
+    return frieze_text
 
 
 def write_html_file(type=None, value=None):
