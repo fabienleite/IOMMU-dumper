@@ -6,7 +6,7 @@
 *.swp
 *.html
 **/out/
-.vscode/
+**/.vscode/
 *.log
 *.swp
 *.html

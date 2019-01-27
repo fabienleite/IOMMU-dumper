@@ -120,7 +120,8 @@ def create_html_from_memory_state(memory_state, session):
     i = 0
     frieze_text = ""
     total_size = 0
-    for memory_part in memory_state: total_size += memory_part['size'] 
+    for memory_part in memory_state:
+        total_size += memory_part["size"]
     for memory_part in memory_state:
         hole = " hole" if memory_part["devices_id"] == -1 else ""
         domain_shared = " domain-shared" if memory_part["devices_id"] == 0 else ""
@@ -141,14 +142,17 @@ def create_html_from_memory_state(memory_state, session):
             color_id = ""
 
         repr_size = 0
-        if float(memory_part['size'] / total_size) > 0.8:
+        if float(memory_part["size"] / total_size) > 0.8:
             repr_size = 8
-        elif float(memory_part['size'] / total_size) < 0.1 and dev_name == "Domain shared space" :
+        elif (
+            float(memory_part["size"] / total_size) < 0.1
+            and dev_name == "Domain shared space"
+        ):
             repr_size = 2
-        elif float(memory_part['size'] / total_size) < 0.1:
+        elif float(memory_part["size"] / total_size) < 0.1:
             repr_size = 1
-        else :
-            repr_size = floor(float(memory_part['size'] / total_size) * 100)
+        else:
+            repr_size = floor(float(memory_part["size"] / total_size) * 10)
 
         frieze_text += (
             "<td "
@@ -172,7 +176,7 @@ def create_html_from_memory_state(memory_state, session):
             + "','"
             + str(memory_part["phys_addr"])
             + "->"
-            + str(hex(int(memory_part['phys_addr'], 16) + memory_part['size']))
+            + str(hex(int(memory_part["phys_addr"], 16) + memory_part["size"]))
             + '\')", onmouseout="revertToNormalOpacityAndText();"'
             + ">"
             + "</td>"
