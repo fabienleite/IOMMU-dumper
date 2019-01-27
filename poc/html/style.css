@@ -3,6 +3,11 @@ html{
     color: #333333;
 }
 
+div.notice{
+    margin-left: 2em;
+    margin-top: 2em;
+}
+
 #frieze-wrapper{
     margin-top: 3em;
     display: block;
@@ -24,21 +29,12 @@ td{
     border-style: solid;
     border-color: black;
     padding: 3em;
-    padding-left: 1em;
-    padding-right: 1em;
     text-align: center;
 }
 
 td.hole{
     background-color: black;
     color: white;
-    padding-right: 4em;
-    padding-left: 4em
-}
-
-td.domain-shared{
-    padding-right: 8em;
-    padding-left: 8em;
 }
 
 .domain-shared{
@@ -81,4 +77,39 @@ td.domain-shared{
 .low-opacity{
     opacity: 0.30;
     transform: scale(0.9);
+}
+
+
+
+td[data-size="1"]{
+    padding-right: 1em;
+    padding-left: 1em;
+}
+td[data-size="2"]{
+    padding-right: 2em;
+    padding-left: 2em;
+}
+td[data-size="3"]{
+    padding-right: 3em;
+    padding-left: 3em;
+}
+td[data-size="4"]{
+    padding-right: 4em;
+    padding-left: 4em;
+}
+td[data-size="5"]{
+    padding-right: 5em;
+    padding-left: 5em;
+}
+td[data-size="6"]{
+    padding-right: 6em;
+    padding-left: 6em;
+}
+td[data-size="7"]{
+    padding-right: 7em;
+    padding-left: 7em;
+}
+td[data-size="8"]{
+    padding-right: 8em;
+    padding-left: 8em;
 }
