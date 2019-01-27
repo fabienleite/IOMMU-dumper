@@ -136,49 +136,49 @@ def _retrieve_events():
                 'type': 'device',
                 'name': 'GTX 960M',
                 'bdf': '01:00.00',
-                'lspci': "Memory at 0xee000000 (32-bit, non-prefetchable) [size=16M]"
+                'lspci': "Memory at 0xee000000000000 (32-bit, non-prefetchable) [size=16M]"
             },
             {
                 '_debug': 'The mapping corresponding to previous attached dev',
                 'type': 'map',
-                'iova': '0x000faf',
+                'iova': '0x000fafafaa0000',
                 'size': 16384,
-                'phys_addr': '0xee000000'
+                'phys_addr': '0xee000000000000'
             },
             {
                 '_debug': 'a working map',
                 'type': 'map',
-                'iova': '0x000400',
+                'iova': '0x00040000000000',
                 'size': 2048,
-                'phys_addr': '0xaa000fa'
+                'phys_addr': '0xaa000faaaaaaaa'
             },
             {
                 '_debug': 'a working map',
                 'type': 'map',
-                'iova': '0x000600',
+                'iova': '0x00060000000000',
                 'size': 2048,
-                'phys_addr': '0xbb000fa'
+                'phys_addr': '0xbb000faaaaaaaa'
             },
             {
                 '_debug': 'a working map',
                 'type': 'map',
-                'iova': '0x000800',
+                'iova': '0x00080088000000',
                 'size': 2048,
-                'phys_addr': '0xcc000fa'
+                'phys_addr': '0xcc000faaaaaaaa'
             },
             {
                 '_debug': 'same iova than the working map, should update',
                 'type': 'map',
-                'iova': '0x000400',
+                'iova': '0x00040000000000',
                 'size': 2048,
-                'phys_addr': '0xaa000fb'
+                'phys_addr': '0xaa000fbbaa00ff'
             },
             {
                 '_debug': 'same phys_addr than working map, should update',
                 'type': 'map',
-                'iova': '0x000a00',
+                'iova': '0x000a00aa00aa00',
                 'size': 2048,
-                'phys_addr': '0xbb000fa'
+                'phys_addr': '0xbb000faaaaaaaa'
             },
             {
                 '_debug': 'a working map',
