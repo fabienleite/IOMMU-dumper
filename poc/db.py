@@ -136,49 +136,49 @@ def _retrieve_events():
                 'type': 'device',
                 'name': 'GTX 960M',
                 'bdf': '01:00.00',
-                'lspci': "Memory at ee000000 (32-bit, non-prefetchable) [size=16M]"
+                'lspci': "Memory at 0xee000000 (32-bit, non-prefetchable) [size=16M]"
             },
             { 
                 '_debug': 'The mapping corresponding to previous attached dev',
                 'type': 'map',
                 'iova': '0x000faf',
                 'size': 16384,
-                'phys_addr': 'ee000000'
+                'phys_addr': '0xee000000'
             },
             { 
                 '_debug': 'a working map',
                 'type': 'map',
                 'iova': '0x000400',
                 'size': 2048,
-                'phys_addr': 'aa000fa'
+                'phys_addr': '0xaa000fa'
             },
             { 
                 '_debug': 'a working map',
                 'type': 'map',
                 'iova': '0x000600',
                 'size': 2048,
-                'phys_addr': 'bb000fa'
+                'phys_addr': '0xbb000fa'
             },
             { 
                 '_debug': 'a working map',
                 'type': 'map',
                 'iova': '0x000800',
                 'size': 2048,
-                'phys_addr': 'cc000fa'
+                'phys_addr': '0xcc000fa'
             },
             { 
                 '_debug': 'same iova than the working map, should update',
                 'type': 'map',
                 'iova': '0x000400',
                 'size': 2048,
-                'phys_addr': 'aa000fb'
+                'phys_addr': '0xaa000fb'
             },
             { 
                 '_debug': 'same phys_addr than working map, should update',
                 'type': 'map',
                 'iova': '0x000a00',
                 'size': 2048,
-                'phys_addr': 'bb000fa'
+                'phys_addr': '0xbb000fa'
             },
     ]
 
