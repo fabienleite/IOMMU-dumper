@@ -12,7 +12,7 @@ iommu-dumper is a program for dumping the current IOMMU mapping configuration. T
 Output information can differ depending on the output type.
 .SH OPTIONS
 .TP
-.BR \-o ", " \-\-output =\fIOUTPUT\fR
+.BR \-o
 Set the output type for the mapping. Values can be \fBcli\fR, \fBhtml\fR or \fBcsv\fR.
 
 \fBCLI\fR
@@ -42,7 +42,7 @@ To output a csv :
 .PP
 .nf
 .RS
-iommu-dumper \-\-output=csv
+iommu-dumper \-o csv
 .RE
 .fi
 .SH SEE ALSO
