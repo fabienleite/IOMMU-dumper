@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Export the current IOMMU mapping in a CSV file located in the out directory
+"""
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_schema import Device, Mapping, Base
@@ -18,7 +21,8 @@ def create_session():
 def main():
     """ Output existing mappings in a CSV file named iommu_config_display.csv
     and located in the out directory.
-    Format is : iova;physical_address;size;device_name (can be empty) """
+    Format is : mapping_id;iova;physical_address;size;device_bdf;device_name
+    Device bdf and device name can be empty. """
 
     session = create_session()
 
@@ -29,7 +33,7 @@ def main():
         output_writer = csv.writer(output_csv, delimiter=';')
 
         # ---- Header
-        output_writer.writerow(['MAPPING','IOVA','PHYSICAL ADDRESS', 'SIZE','DEVICE B.D:F', 'DEVICE NAME'])
+        output_writer.writerow(['MAPPING ID','IOVA','PHYSICAL ADDRESS', 'SIZE','DEVICE B.D:F', 'DEVICE NAME'])
 
         for map in session.query(Mapping).all():
             device = session.query(Device).filter_by(mapping=map).one_or_none()
