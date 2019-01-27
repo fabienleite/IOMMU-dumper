@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_schema import Mapping, Base
+from db_schema import Mapping, Base, Device
 
 
 def create_session():
@@ -15,50 +17,31 @@ def create_session():
 
 def main ():
     """ Display each mapping on the terminal.
-    Display IOVA, physical address and the size."""
+    Display IOVA, physical address, size and, if a device is attached, its bdf and name."""
 
     session = create_session()
 
     # Defining header and separators
-    beginning_and_end = "-" * 54
-    first_line = " MAPPING |  IOVA            | PHYSICAL ADDRESS | SIZE "
+    beginning_and_end = "-" * 80
+    first_line = " MAPPING | IOVA             | PHYSICAL ADDRESS | SIZE | B.D:F    | DEVICE NAME "
 
     print(beginning_and_end + "\n" + first_line + "\n" + beginning_and_end)
 
     for cnt, m in enumerate(session.query(Mapping).all(), 1):
-
-        #device = session.query(Device).filter_by(mapping=map).one_or_none()
-
-        #iova = [m.iova for m in session.query(Mapping).filter_by(device=d).all()]
-        #phys_addr = [m.phys_addr for m in session.query(Mapping).filter_by(device=d).all()]
-        #
-        # biggest_len = (
-        #     len(iova)
-        #     if len(iova) > len(phys_addr)
-        #     else len(phys_addr)
-        # )
-        # biggest_len_is_virt = (
-        #     True if len(iova) > len(phys_addr) else False
-        # )
-        #
-        # for i in range(0, biggest_len):
-        #     beginning = " " + str(cnt) + "      | " + d.bdf + " | "
-        #     if i > 0:
-        #         beginning = " _      | " + "_         | "
-        #
-        #     try:
-        #         print(beginning + iova[i] + " | " + phys_addr[i])
-        #     except IndexError:
-        #         if biggest_len_is_virt:
-        #             print(beginning + iova + " | " + "_         ")
-        #         else:
-        #             print(beginning + "_         " + " | " + phys_addr[i])
-
         iova = str(m.iova)
         pa = str(m.phys_addr)
         size = str(m.size)
 
-        print(" " + str(cnt) + "       | " + iova + " | " + pa + " | " + size)
+        device = session.query(Device).filter_by(mapping=m).one_or_none()
+
+        if device is not None:
+            d_bdf = str(device.bdf)
+            d_name = str(device.name)
+        else:
+            d_bdf = "        "
+            d_name = ""
+
+        print(" " + str(cnt) + "       | " + iova + " | " + pa + " | " + size + " | " + d_bdf + " | " + d_name)
 
         print(beginning_and_end)
 
