@@ -20,7 +20,7 @@ def create_session():
     return DBSession()
 
 def e_device(session, _name, _bdf, _lspci):
-    m = re.findall('(?<=Memory at )(?:\w+)(?= \()', _lspci)
+    m = re.findall(r'(?<=Memory at )(?:\w+)(?= \()', _lspci)
     existing_d = session.query(Device).filter_by(bdf=_bdf).one_or_none()
 
     if existing_d:
