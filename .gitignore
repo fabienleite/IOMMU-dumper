@@ -2,6 +2,10 @@
 *.pyc
 **/env
 *.db
+*.log
+*.swp
+*.html
+**/out/
 .vscode/
 *.log
 *.swp

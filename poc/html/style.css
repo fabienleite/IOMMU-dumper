@@ -3,11 +3,14 @@ html{
     color: #333333;
 }
 
+<<<<<<< HEAD
 div.notice{
     margin-left: 2em;
     margin-top: 2em;
 }
 
+=======
+>>>>>>> e533bf98961ebe211c9b84494c293be63c050f6f
 #frieze-wrapper{
     margin-top: 3em;
     display: block;
@@ -29,12 +32,27 @@ td{
     border-style: solid;
     border-color: black;
     padding: 3em;
+<<<<<<< HEAD
+=======
+    padding-left: 1em;
+    padding-right: 1em;
+>>>>>>> e533bf98961ebe211c9b84494c293be63c050f6f
     text-align: center;
 }
 
 td.hole{
     background-color: black;
     color: white;
+<<<<<<< HEAD
+=======
+    padding-right: 4em;
+    padding-left: 4em
+}
+
+td.domain-shared{
+    padding-right: 8em;
+    padding-left: 8em;
+>>>>>>> e533bf98961ebe211c9b84494c293be63c050f6f
 }
 
 .domain-shared{
@@ -77,6 +95,7 @@ td.hole{
 .low-opacity{
     opacity: 0.30;
     transform: scale(0.9);
+<<<<<<< HEAD
 }
 
 
@@ -112,4 +131,6 @@ td[data-size="7"]{
 td[data-size="8"]{
     padding-right: 8em;
     padding-left: 8em;
+=======
+>>>>>>> e533bf98961ebe211c9b84494c293be63c050f6f
 }
