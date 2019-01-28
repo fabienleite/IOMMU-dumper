@@ -2,8 +2,13 @@
 *.pyc
 **/env
 *.db
-.vscode/
 *.log
 *.swp
 *.html
 *.csv
+**/out/
+**/.vscode/
+*.log
+*.swp
+*.html
+**/out/
