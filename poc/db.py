@@ -155,10 +155,24 @@ def _retrieve_events():
                 'phys_addr': '0xee000000000000'
             },
             {
+                '_debug': 'a device with a mapping',
+                'type': 'device',
+                'name': 'EL PROCESSOR',
+                'bdf': '02:00.00',
+                'lspci': "Memory at 0xff000000000000 (32-bit, non-prefetchable) [size=32M]"
+            },
+            {
+                '_debug': 'The mapping corresponding to previous attached dev',
+                'type': 'map',
+                'iova': '0x000fafafaa0000',
+                'size': 32768,
+                'phys_addr': '0xff000000000000'
+            },
+            {
                 '_debug': 'a working map',
                 'type': 'map',
                 'iova': '0x00040000000000',
-                'size': 2048,
+                'size': 131072,
                 'phys_addr': '0xaa000faaaaaaaa'
             },
             {
