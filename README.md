@@ -36,7 +36,18 @@ $ grub-mkconfig –output /path/to/grub.cfg
 
 You can download the IOMMU-Dumper project by cloning the Git repository :
 ```bash
-git clone https://github.com/fabienleite/IOMMU-dumper
+$ git clone https://github.com/fabienleite/IOMMU-dumper
+```
+
+To properly install the man you must do :
+```bash
+$ cp IOMMU-dumper/iommu-dumper.1 /usr/share/man/man1/
+$ mandb
+```
+
+Then you'll be able to read the man with
+```bash
+$ man iommu-dumper
 ```
 
 ## Authors
