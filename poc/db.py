@@ -32,8 +32,8 @@ def e_device(session, _name, _bdf, _lspci):
                 name = _name,
                 bdf = _bdf,
                 mapping = Mapping(
-                    phys_addr = m[0][0] if m else "0x00000000",
-                    iova = "0x0000000",
+                    phys_addr = m[0][0] if m else "0x00000000000000",
+                    iova = "0x00000000000000",
                     size = int(m[0][1]) * 1024
                 )
         )
@@ -172,7 +172,7 @@ def _retrieve_events():
                 '_debug': 'a working map',
                 'type': 'map',
                 'iova': '0x00040000000000',
-                'size': 131072,
+                'size': 13172,
                 'phys_addr': '0xaa000faaaaaaaa'
             },
             {
@@ -206,7 +206,7 @@ def _retrieve_events():
             {
                 '_debug': 'a working map',
                 'type': 'map',
-                'iova': '0x000700',
+                'iova': '0x00070000070000',
                 'size': 2048,
                 'phys_addr': '0xcc000fabbc0000'
             },

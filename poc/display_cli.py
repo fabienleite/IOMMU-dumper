@@ -23,7 +23,7 @@ def main ():
 
     # Defining header and separators
     beginning_and_end = "-" * 80
-    first_line = " MAPPING | IOVA             | PHYSICAL ADDRESS | SIZE | B.D:F    | DEVICE NAME "
+    first_line = " MAPPING | IOVA             | PHYSICAL ADDRESS | SIZE  | B.D:F    | DEVICE NAME "
 
     print(beginning_and_end + "\n" + first_line + "\n" + beginning_and_end)
 
