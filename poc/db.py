@@ -208,7 +208,7 @@ def _retrieve_events():
                 'type': 'map',
                 'iova': '0x000700',
                 'size': 2048,
-                'phys_addr': 'cc000fabbg'
+                'phys_addr': '0xcc000fabbc0000'
             },
     ]
 

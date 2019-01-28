@@ -175,7 +175,7 @@ def create_html_from_memory_state(memory_state, session):
             + str(memory_part["iova"])
             + "','"
             + str(memory_part["phys_addr"])
-            + "->"
+            + " → "
             + str(hex(int(memory_part["phys_addr"], 16) + memory_part["size"]))
             + '\')", onmouseout="revertToNormalOpacityAndText();"'
             + ">"
