@@ -20,7 +20,7 @@ def create_session():
     return DBSession()
 
 def e_device(session, _name, _bdf, _lspci):
-    m = re.findall(r'(?<=Memory at )(?:\w+)(?= \()', _lspci)
+    m = re.findall(r'(?<=Memory at )(?P<memory>\w+).*(?<=size=)(?P<size>\d\d)', _lspci)
     existing_d = session.query(Device).filter_by(bdf=_bdf).one_or_none()
 
     if existing_d:
@@ -32,8 +32,9 @@ def e_device(session, _name, _bdf, _lspci):
                 name = _name,
                 bdf = _bdf,
                 mapping = Mapping(
-                    phys_addr = m[0] if m else "0x00000000",
-                    iova = "0x0000000"
+                    phys_addr = m[0][0] if m else "0x00000000",
+                    iova = "0x0000000",
+                    size = int(m[0][1]) * 1024
                 )
         )
         session.add(new_device)
@@ -124,6 +125,14 @@ def create_db_from_parse():
     for m in session.query(Mapping).all():
         logging.debug('v:{} -> p:{} ({})'
                 .format(m.iova, m.phys_addr, m.size))
+    logging.debug('List of devices')
+    for d in session.query(Device).all():
+        logging.debug('bdf: {} mapping: {} {}'
+                .format(
+                    d.bdf,
+                    d.mapping.phys_addr,
+                    d.mapping.size
+        ))
 
 def main():
     session = create_session()

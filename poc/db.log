@@ -1,34 +1,24 @@
 DEBUG:root:a device with a mapping
-ERROR:root:local variable 'new_device' referenced before assignment
-Traceback (most recent call last):
-  File "db.py", line 116, in create_db_from_parse
-    handle_event(session, e)
-  File "db.py", line 103, in handle_event
-    event['lspci']
-  File "db.py", line 28, in e_device
-    .format(new_device.bdf))
-UnboundLocalError: local variable 'new_device' referenced before assignment
+INFO:root:Added device 01:00.00 with base PA 0xee000000000000
 DEBUG:root:The mapping corresponding to previous attached dev
-INFO:root:Mapped v:0x000faf p:ee000000
+INFO:root:(Update) VA <0x0000000> => <0x000fafafaa0000> for PA 0xee000000000000
 DEBUG:root:a working map
-INFO:root:Mapped v:0x000400 p:aa000fa
+INFO:root:Mapped v:0x00040000000000 p:0xaa000faaaaaaaa
 DEBUG:root:a working map
-INFO:root:Mapped v:0x000600 p:bb000fa
+INFO:root:Mapped v:0x00060000000000 p:0xbb000faaaaaaaa
 DEBUG:root:a working map
-INFO:root:Mapped v:0x000800 p:cc000fa
+INFO:root:Mapped v:0x00080088000000 p:0xcc000faaaaaaaa
 DEBUG:root:same iova than the working map, should update
-INFO:root:(Update) PA <aa000fa> => <aa000fb> for VA 0x000400
+INFO:root:(Update) PA <0xaa000faaaaaaaa> => <0xaa000fbbaa00ff> for VA 0x00040000000000
 DEBUG:root:same phys_addr than working map, should update
-INFO:root:(Update) VA <0x000600> => <0x000a00> for PA bb000fa
+INFO:root:(Update) VA <0x00060000000000> => <0x000a00aa00aa00> for PA 0xbb000faaaaaaaa
 DEBUG:root:a working map
 INFO:root:Mapped v:0x000700 p:cc000fabbg
 DEBUG:root:List of mappings
-DEBUG:root:v:0x000fafafaa0000 -> p:0xee000000000000 (None)
+DEBUG:root:v:0x000fafafaa0000 -> p:0xee000000000000 (16384)
 DEBUG:root:v:0x00040000000000 -> p:0xaa000fbbaa00ff (2048)
 DEBUG:root:v:0x000a00aa00aa00 -> p:0xbb000faaaaaaaa (2048)
 DEBUG:root:v:0x00080088000000 -> p:0xcc000faaaaaaaa (2048)
-DEBUG:root:v:0x000faf -> p:ee000000 (16384)
-DEBUG:root:v:0x000400 -> p:aa000fb (2048)
-DEBUG:root:v:0x000a00 -> p:bb000fa (2048)
-DEBUG:root:v:0x000800 -> p:cc000fa (2048)
 DEBUG:root:v:0x000700 -> p:cc000fabbg (2048)
+DEBUG:root:List of devices
+DEBUG:root:bdf: 01:00.00 mapping: 0xee000000000000 16384
