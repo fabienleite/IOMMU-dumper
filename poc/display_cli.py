@@ -32,7 +32,7 @@ def main ():
         pa = str(m.phys_addr)
         size = str(m.size)
 
-        device = session.query(Device).filter_by(mapping=m).one_or_none()
+        device = m.device
 
         if device is not None:
             d_bdf = str(device.bdf)

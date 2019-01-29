@@ -36,7 +36,7 @@ def main():
         output_writer.writerow(['MAPPING ID','IOVA','PHYSICAL ADDRESS', 'SIZE','DEVICE B.D:F', 'DEVICE NAME'])
 
         for map in session.query(Mapping).all():
-            device = session.query(Device).filter_by(mapping=map).one_or_none()
+            device = map.device
 
             if device is not None:
                 device_name = device.name

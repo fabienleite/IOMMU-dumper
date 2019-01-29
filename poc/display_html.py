@@ -95,11 +95,9 @@ def add_device_info(mappings, session):
         - session : the database session
     """
     for mapping in mappings:
-        mapping_device = (
-            session.query(Device).filter(Device.mapping == mapping).one_or_none()
-        )
-        if mapping_device != None:
+        if mapping.device != None:
             # Devices map exactly one segment for them specifically
+            mapping_device = mapping.device
             mapping.devices_id = mapping_device.id
         else:
             # If the mapping is in the mapping table and not related to a Device,
