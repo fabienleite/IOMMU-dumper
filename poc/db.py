@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from db_schema import Device, Mapping, Base
 import re
+import os
 
 import logging
 logging.basicConfig(filename='db.log', level=logging.DEBUG)
@@ -19,33 +20,40 @@ def create_session():
     DBSession = sessionmaker(bind=engine)
     return DBSession()
 
-def e_device(session, _name, _bdf, _lspci):
-    m = re.findall(r'(?<=Memory at )(?P<memory>\w+).*(?<=size=)(?P<size>\d\d)', _lspci)
+def e_device(session, _name, _bdf, _memories):
     existing_d = session.query(Device).filter_by(bdf=_bdf).one_or_none()
-
     if existing_d:
         logging.warning("Device {} already exist, not adding"
                 .format(new_device.bdf))
         return existing_d
     else:
-        new_device = Device(
-                name = _name,
-                bdf = _bdf,
-                mapping = Mapping(
-                    phys_addr = m[0][0] if m else "0x00000000000000",
-                    iova = "0x00000000000000",
-                    size = int(m[0][1]) * 1024
-                )
-        )
-        session.add(new_device)
-        session.commit()
-        logging.info('Added device {} with base PA {}'
-                .format(
-                    new_device.bdf,
-                    new_device.mapping.phys_addr
-                    ))
-        return new_device
+        print(_memories)
+        for memory in _memories:
+            m = re.findall(r'Memory at (.*) \(.*\) \[size=([0-9]*)K\]', memory)
+            if m:
+                paddr=m[0][0]
+                while len(paddr)<16:
+                    paddr="0"+paddr
+                paddr="0x"+paddr
+            new_mapping=Mapping(
+                            phys_addr = paddr if m else "0x00000000000000",
+                            iova = "0x00000000000000",
+                            size = int(m[0][1]) * 1024,
+                            device =  Device(
+                                name = _name,
+                                bdf = _bdf,
+                            ),
+                        )
 
+        
+        session.add(new_mapping)
+        session.commit()
+        #logging.info('Added device {} with base PA {}'
+        #        .format(
+        #            new_device.bdf,
+        #            new_device.mapping.phys_addr
+        #            ))
+        return new_link
 
 def e_map(session, _iova, _phys_addr, _size):
     existing_p = session.query(Mapping).filter_by(phys_addr=_phys_addr).one_or_none()
@@ -96,21 +104,29 @@ def handle_event(session, event):
                 event['size']
         )
         return mapped
-    elif event['type'] == 'device':
+    elif event['type'] == 'attach_device_to_domain':
+        print("DEBUG 1")
+        lspci=os.popen("/usr/bin/lspci -v -s %s" % event['bdf']).read()
+        print("DEBUG 2")
+        print(lspci)
+        memories=[line[1:] for line in lspci.split('\n') if 'Memory at ' in line] #A list of all "Memory at" in a lspci for a given device
+        print("DEBUG 3")
+        print(memories)
         e_device(
-                session,
-                event['name'],
-                event['bdf'],
-                event['lspci']
-                )
+            session,
+            event['name'],
+            event['bdf'],
+            memories
+        )
 
 
 def create_db_from_parse():
     session = create_session()
     from event_parser import parse_tracefile
 
-    #for e in parse_tracefile("/home/maxime/iommu_trace_wifi.txt"):
-    for e in _retrieve_events():
+    #for e in _retrieve_events():
+    for e in parse_tracefile("test_trace"):
+        print(e)
         if '_debug' in e:
             logging.debug(e['_debug'])
         try:
@@ -126,13 +142,13 @@ def create_db_from_parse():
         logging.debug('v:{} -> p:{} ({})'
                 .format(m.iova, m.phys_addr, m.size))
     logging.debug('List of devices')
-    for d in session.query(Device).all():
-        logging.debug('bdf: {} mapping: {} {}'
-                .format(
-                    d.bdf,
-                    d.mapping.phys_addr,
-                    d.mapping.size
-        ))
+    #for d in session.query(Device).all():
+    #    logging.debug('bdf: {} mapping: {} {}'
+    #            .format(
+    #                d.bdf,
+    #                d.mapping.phys_addr,
+    #                d.mapping.size
+    #    ))
 
 def main():
     session = create_session()

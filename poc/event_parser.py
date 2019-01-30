@@ -12,9 +12,9 @@ def parse_line(line):
 
     Output:
         - A dictionary. Dictionary can have 3 formats :
-            MAP EVENT           {event_type, iova, phys_addr, size}
-            UNMAP EVENT         {event_type, iova, size, unmapped_size}
-            ATTACH/DETACH EVENT {event_type, device_bdf}
+            MAP EVENT           {type, iova, phys_addr, size}
+            UNMAP EVENT         {type, iova, size, unmapped_size}
+            ATTACH/DETACH EVENT {type, bdf}
 
     """
     # Regex to verify if it's a known event
@@ -31,21 +31,21 @@ def parse_line(line):
     if event == "attach_device_to_domain" or event == "detach_device_from_domain":
         r_args = re.compile(r".* device=(.*)$")
 
-        device_bdf = ":".join(
+        bdf = ":".join(
             r_args.search(ev_args).group(1).split(":")[1:]
         )  # Remove PCI domain to BDF
-        return {"event_type": event, "device_bdf": device_bdf}
+        return {"type": event, "bdf": bdf}
 
     elif event == "map":
         r_args = re.compile(r".* iova=(.*) paddr=(.*) size=(.*)$")
         iova, phys_addr, size = r_args.search(ev_args).groups()
-        return {"event_type": event, "iova": iova, "phys_addr": phys_addr, "size": size}
+        return {"type": event, "iova": iova, "phys_addr": phys_addr, "size": size}
 
     elif event == "unmap":
         r_args = re.compile(r".* iova=(.*) size=(.*) unmapped_size=(.*)$")
         iova, size, unmapped_size = r_args.search(ev_args).groups()
         return {
-            "event_type": event,
+            "type": event,
             "iova": iova,
             "size": size,
             "unmapped_size": unmapped_size,
@@ -55,8 +55,8 @@ def parse_line(line):
 def parse_tracefile(filename="/sys/kernel/debug/tracing/trace"):
     """
     Parses a trace file to get IOMMU events and their arguments.
-    Add device_bdf & device_name to MAP EVENT
-    Add device_name to ATTACH/DETACH EVENT
+    Add bdf & name to MAP EVENT
+    Add name to ATTACH/DETACH EVENT
 
     Attributes:
         - A file name as String. 
@@ -64,9 +64,9 @@ def parse_tracefile(filename="/sys/kernel/debug/tracing/trace"):
 
     Output:
         - A list of Dictionary. Dictionary can have 3 formats :
-            MAP EVENT           {event_type, device_bdf, device_name, iova, phys_addr, size}
-            UNMAP EVENT         {event_type, iova, size, unmapped_size}
-            ATTACH/DETACH EVENT {event_type, device_bdf, device_name}
+            MAP EVENT           {type, bdf, name, iova, phys_addr, size}
+            UNMAP EVENT         {type, iova, size, unmapped_size}
+            ATTACH/DETACH EVENT {type, bdf, name}
 
     """
     try:
@@ -86,25 +86,25 @@ def parse_tracefile(filename="/sys/kernel/debug/tracing/trace"):
             if parsed_line == None:
                 continue
 
-            if parsed_line["event_type"] == "attach_device_to_domain":
+            if parsed_line["type"] == "attach_device_to_domain":
                 lspci_output = os.popen(
-                    "lspci -s %s" % parsed_line["device_bdf"]
+                    "lspci -s %s" % parsed_line["bdf"]
                 ).read()
-                device_name = lspci_output[
-                    len(parsed_line["device_bdf"]) : -1
+                name = lspci_output[
+                    len(parsed_line["bdf"]) : -1
                 ]  # Remove BDF & newline char
-                parsed_line["device_name"] = device_name
+                parsed_line["name"] = name
 
-                last_attach = (parsed_line["device_bdf"], device_name)
+                last_attach = (parsed_line["bdf"], name)
 
-            elif parsed_line["event_type"] == "detach_device_from_domain":
+            elif parsed_line["type"] == "detach_device_from_domain":
                 lspci_output = os.popen(
-                    "lspci -s %s" % parsed_line["device_bdf"]
+                    "lspci -s %s" % parsed_line["bdf"]
                 ).read()
-                device_name = lspci_output[
-                    len(parsed_line["device_bdf"]) : -1
+                name = lspci_output[
+                    len(parsed_line["bdf"]) : -1
                 ]  # Remove BDF & newline char
-                parsed_line["device_name"] = device_name
+                parsed_line["name"] = name
 
             parsed_traces.append(parsed_line)
 
