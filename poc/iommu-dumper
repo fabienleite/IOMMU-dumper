@@ -1,0 +1,66 @@
+#!/bin/bash
+
+OPTIND=1
+
+display_usage() {
+  echo -e "\nUsage: ./iommu-dumper -o output"
+  echo -e "\nOutput value can be 'cli', 'html' or 'csv'.\n"
+}
+
+if [ "$#" -eq 0 ]; then
+  echo "Invalid number of arguments."
+  display_usage
+fi
+
+while getopts ":o:h" option; do
+  case $option in
+    o)
+      case $OPTARG in
+        cli)
+          if [ -f 'display_cli.py' ]; then
+
+            echo -e "\nIOMMU mapping :\n"
+            python display_cli.py
+          else
+            echo -e "IOMMU dumping on terminal is not available.\nPlease check the display_cli.py script."
+          fi
+        ;;
+        html)
+          if [ -f 'display_html.py' ]; then
+            echo "IOMMU mapping has been exported to out/iommu_config_display.html"
+            python display_html.py
+          else
+            echo -e "IOMMU dumping to html output is not available.\nPlease check the display_html.py script."
+          fi
+        ;;
+        csv)
+          if [ -f 'display_csv.py' ]; then
+            echo "IOMMU mapping has been exported to out/iommu_config_display.csv"
+            python display_csv.py
+          else
+            echo -e "IOMMU dumping to csv output is not available.\nPlease check the display_csv.py script."
+          fi
+        ;;
+        *)
+          echo "Invalid argument"
+          display_usage
+          exit 1
+        ;;
+      esac
+      ;;
+    h)
+      display_usage
+      exit 0
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument."
+      display_usage
+      exit 1
+      ;;
+    \?)
+      echo "Invalid option : -$OPTARG"
+      display_usage
+      exit 1
+      ;;
+  esac
+done
